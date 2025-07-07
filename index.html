@@ -653,8 +653,18 @@
                         setShapes(data.shapes || []);
                         setArrows(data.arrows || []);
                         setFreeTexts(data.freeTexts || []);
-                        const allIds = [...(data.shapes || []), ...(data.arrows || []), ...(data.freeTexts || [])].map(item => item.id);
+                        
+                        // Calculate the next ID based on all existing IDs
+                        const allIds = [
+                            ...(data.shapes || []),
+                            ...(data.arrows || []),
+                            ...(data.freeTexts || [])
+                        ].map(item => item.id);
                         setNextId(allIds.length > 0 ? Math.max(...allIds) + 1 : 1);
+                        
+                        // Clear any selections since the elements have changed
+                        setSelectedElement(null);
+                        setEditingElement(null);
                     } catch (error) {
                         alert('Invalid JSON file');
                     }
@@ -681,8 +691,17 @@
                             clearCanvasWithoutConfirm();
                             setShapes(data.shapes);
                             setArrows(data.arrows || []);
-                            const allIds = [...data.shapes, ...(data.arrows || [])].map(item => item.id);
+                            
+                            // Calculate the next ID correctly
+                            const allIds = [
+                                ...data.shapes,
+                                ...(data.arrows || [])
+                            ].map(item => item.id);
                             setNextId(allIds.length > 0 ? Math.max(...allIds) + 1 : 1);
+                            
+                            // Clear any selections since new elements were created
+                            setSelectedElement(null);
+                            setEditingElement(null);
                         }
                     }
                 } catch (error) {
