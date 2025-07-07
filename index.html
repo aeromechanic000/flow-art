@@ -59,7 +59,7 @@
         const Upload = (props) => <Icon d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" {...props} />;
         const Trash2 = (props) => <Icon d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" {...props} />;
         const X = (props) => <Icon d="M18 6L6 18M6 6l12 12" {...props} />;
-        const Bot = (props) => <Icon d="M12 8V4m-4 4v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8M8 8a4 4 0 0 1 8 0M9 17h.01M15 17h.01" {...props} />;
+        const Bot = (props) => <Icon d="M12 2v2M8 6h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm2 4a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm4 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM9 15h6M5 10v4M19 10v4" {...props} />;
         const ChevronDown = (props) => <Icon d="m6 9 6 6 6-6" {...props} />;
         const Edit2 = (props) => <Icon d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" {...props} />;
         const Image = (props) => <Icon d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" {...props} />;
@@ -219,8 +219,9 @@
             };
 
             const createShape = useCallback((type, x, y) => {
+                const newId = nextId;
                 const shape = {
-                    id: nextId,
+                    id: newId,
                     type,
                     x: x - 50,
                     y: y - 25,
@@ -237,13 +238,14 @@
 
                 setShapes(prev => [...prev, shape]);
                 setNextId(prev => prev + 1);
-                setSelectedElement({ type: 'shape', id: nextId });
+                setSelectedElement({ type: 'shape', id: newId });
                 setCurrentMode('select');
             }, [nextId, currentColor]);
 
             const createFreeText = useCallback((x, y) => {
+                const newId = nextId;
                 const text = {
-                    id: nextId,
+                    id: newId,
                     x,
                     y,
                     text: 'New Text',
@@ -252,13 +254,14 @@
 
                 setFreeTexts(prev => [...prev, text]);
                 setNextId(prev => prev + 1);
-                setSelectedElement({ type: 'text', id: nextId });
+                setSelectedElement({ type: 'text', id: newId });
                 setCurrentMode('select');
             }, [nextId]);
 
             const createArrow = useCallback((startShape, startPoint, endShape, endPoint) => {
+                const newId = nextId;
                 const arrow = {
-                    id: nextId,
+                    id: newId,
                     startId: startShape.id,
                     startPoint,
                     endId: endShape.id,
@@ -497,7 +500,6 @@
 
                 let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
 
-                // Check shapes
                 shapes.forEach(shape => {
                     minX = Math.min(minX, shape.x);
                     minY = Math.min(minY, shape.y);
@@ -505,15 +507,13 @@
                     maxY = Math.max(maxY, shape.y + shape.height);
                 });
 
-                // Check texts
                 freeTexts.forEach(text => {
-                    minX = Math.min(minX, text.x - 50); // Approximate text width
-                    minY = Math.min(minY, text.y - 10); // Approximate text height
+                    minX = Math.min(minX, text.x - 50);
+                    minY = Math.min(minY, text.y - 10);
                     maxX = Math.max(maxX, text.x + 50);
                     maxY = Math.max(maxY, text.y + 10);
                 });
 
-                // Add padding
                 const padding = 50;
                 return {
                     minX: minX - padding,
@@ -528,26 +528,21 @@
                 const width = bounds.maxX - bounds.minX;
                 const height = bounds.maxY - bounds.minY;
 
-                // Create SVG content
                 let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="${bounds.minX} ${bounds.minY} ${width} ${height}">`;
                 
-                // Add background
                 svgContent += `<rect x="${bounds.minX}" y="${bounds.minY}" width="${width}" height="${height}" fill="white"/>`;
 
-                // Add grid if enabled
                 if (showGrid) {
                     svgContent += `<defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" stroke-width="1"/></pattern></defs>`;
                     svgContent += `<rect x="${bounds.minX}" y="${bounds.minY}" width="${width}" height="${height}" fill="url(#grid)"/>`;
                 }
 
-                // Add arrow markers
                 svgContent += '<defs>';
                 arrows.forEach(arrow => {
                     svgContent += `<marker id="arrowhead-${arrow.id}" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="${arrow.color}"/></marker>`;
                 });
                 svgContent += '</defs>';
 
-                // Add arrows
                 arrows.forEach(arrow => {
                     const startShape = shapes.find(s => s.id === arrow.startId);
                     const endShape = shapes.find(s => s.id === arrow.endId);
@@ -561,7 +556,6 @@
                     }
                 });
 
-                // Add shapes
                 shapes.forEach(shape => {
                     let shapeElement = '';
                     switch (shape.type) {
@@ -585,7 +579,6 @@
                     svgContent += `<text x="${shape.x + shape.width / 2}" y="${shape.y + shape.height / 2}" text-anchor="middle" dominant-baseline="middle" font-size="14" font-weight="500" fill="#374151">${shape.text}</text>`;
                 });
 
-                // Add free texts
                 freeTexts.forEach(text => {
                     svgContent += `<text x="${text.x}" y="${text.y}" font-size="14" font-weight="500" fill="${text.color}">${text.text}</text>`;
                 });
@@ -603,32 +596,6 @@
                 a.download = 'flowchart.svg';
                 a.click();
                 URL.revokeObjectURL(url);
-            };
-
-            const exportPNG = () => {
-                const svgContent = generateExportSVG();
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const img = new Image();
-                
-                img.onload = () => {
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-                    
-                    canvas.toBlob(blob => {
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'flowchart.png';
-                        a.click();
-                        URL.revokeObjectURL(url);
-                    }, 'image/png');
-                };
-                
-                const svgBlob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
-                const svgUrl = URL.createObjectURL(svgBlob);
-                img.src = svgUrl;
             };
 
             const exportData = () => {
@@ -654,7 +621,6 @@
                         setArrows(data.arrows || []);
                         setFreeTexts(data.freeTexts || []);
                         
-                        // Calculate the next ID based on all existing IDs
                         const allIds = [
                             ...(data.shapes || []),
                             ...(data.arrows || []),
@@ -662,7 +628,6 @@
                         ].map(item => item.id);
                         setNextId(allIds.length > 0 ? Math.max(...allIds) + 1 : 1);
                         
-                        // Clear any selections since the elements have changed
                         setSelectedElement(null);
                         setEditingElement(null);
                     } catch (error) {
@@ -671,6 +636,48 @@
                 };
                 reader.readAsText(file);
                 e.target.value = '';
+            };
+
+            // FIXED: Normalize AI data to ensure all IDs are valid integers
+            const normalizeAIData = (data) => {
+                let currentId = nextId;
+                
+                // Normalize shapes
+                const normalizedShapes = (data.shapes || []).map(shape => ({
+                    ...shape,
+                    id: currentId++,
+                    // Ensure all required properties exist
+                    type: shape.type || 'rectangle',
+                    x: Number(shape.x) || 100,
+                    y: Number(shape.y) || 100,
+                    width: Number(shape.width) || 100,
+                    height: Number(shape.height) || 50,
+                    text: shape.text || 'Process',
+                    color: shape.color || '#e3f2fd'
+                }));
+                
+                // Create ID mapping for arrows
+                const idMapping = {};
+                (data.shapes || []).forEach((originalShape, index) => {
+                    idMapping[originalShape.id] = normalizedShapes[index].id;
+                });
+                
+                // Normalize arrows
+                const normalizedArrows = (data.arrows || []).map(arrow => ({
+                    ...arrow,
+                    id: currentId++,
+                    startId: idMapping[arrow.startId] || normalizedShapes[0]?.id,
+                    endId: idMapping[arrow.endId] || normalizedShapes[1]?.id,
+                    startPoint: arrow.startPoint || 'right',
+                    endPoint: arrow.endPoint || 'left',
+                    color: arrow.color || '#374151'
+                })).filter(arrow => arrow.startId && arrow.endId);
+                
+                return {
+                    shapes: normalizedShapes,
+                    arrows: normalizedArrows,
+                    nextId: currentId
+                };
             };
 
             const generateAIFlowchart = async () => {
@@ -686,23 +693,22 @@
                     
                     const jsonMatch = text.match(/\{[\s\S]*\}/);
                     if (jsonMatch) {
-                        const data = JSON.parse(jsonMatch[0]);
-                        if (data.shapes) {
-                            clearCanvasWithoutConfirm();
-                            setShapes(data.shapes);
-                            setArrows(data.arrows || []);
-                            
-                            // Calculate the next ID correctly
-                            const allIds = [
-                                ...data.shapes,
-                                ...(data.arrows || [])
-                            ].map(item => item.id);
-                            setNextId(allIds.length > 0 ? Math.max(...allIds) + 1 : 1);
-                            
-                            // Clear any selections since new elements were created
-                            setSelectedElement(null);
-                            setEditingElement(null);
-                        }
+                        const rawData = JSON.parse(jsonMatch[0]);
+                        const normalizedData = normalizeAIData(rawData);
+                        
+                        // Clear everything and set new data with proper IDs
+                        setShapes([]);
+                        setArrows([]);
+                        setFreeTexts([]);
+                        setSelectedElement(null);
+                        setEditingElement(null);
+                        
+                        // Use setTimeout to ensure state is cleared first
+                        setTimeout(() => {
+                            setShapes(normalizedData.shapes);
+                            setArrows(normalizedData.arrows);
+                            setNextId(normalizedData.nextId);
+                        }, 0);
                     }
                 } catch (error) {
                     console.error('AI generation failed:', error);
@@ -1003,13 +1009,11 @@
 
             return (
                 <div className="h-screen flex flex-col bg-gray-50">
-                    {/* Header */}
                     <div className="bg-white border-b border-gray-200 p-4">
                         <div className="flex items-center justify-between gap-4">
                             <div className="app-icon">F</div>
                             <h1 className="text-2xl font-bold text-gray-900 flex-shrink-0">Flowart</h1>
 
-                            {/* AI Generator */}
                             <div className="flex items-center gap-3 flex-1 max-w-none">
                                 <div className="flex items-center gap-3 w-full max-w-4xl">
                                     <input
@@ -1031,7 +1035,6 @@
                                 </div>
                             </div>
 
-                            {/* File Operations */}
                             <div className="flex items-center gap-2 flex-shrink-0">
                                 <div className="relative" ref={exportDropdownRef}>
                                     <button
@@ -1066,16 +1069,6 @@
                                                     <FileImage size={16} />
                                                     <span className="text-sm">Export SVG</span>
                                                 </button>
-                                                <button
-                                                    onClick={() => {
-                                                        exportPNG();
-                                                        setShowExportDropdown(false);
-                                                    }}
-                                                    className="flex items-center gap-3 w-full p-2 text-left hover:bg-gray-50 rounded"
-                                                >
-                                                    <Image size={16} />
-                                                    <span className="text-sm">Export PNG</span>
-                                                </button>
                                             </div>
                                         </div>
                                     )}
@@ -1108,10 +1101,8 @@
                         </div>
                     </div>
 
-                    {/* Toolbar */}
                     <div className="bg-white border-b border-gray-200 p-4">
                         <div className="flex items-center gap-6 flex-wrap">
-                            {/* Mode Tools */}
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium text-gray-700">Mode:</span>
                                 <button
@@ -1144,7 +1135,6 @@
                                 </button>
                             </div>
 
-                            {/* Shape Tools */}
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium text-gray-700">Shapes:</span>
                                 {shapeTypes.map(({ type, icon: Icon, label }) => (
@@ -1159,7 +1149,6 @@
                                 ))}
                             </div>
 
-                            {/* View Controls */}
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium text-gray-700">View:</span>
                                 <button onClick={zoomIn} className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg" title="Zoom In">
@@ -1183,7 +1172,6 @@
                                 </button>
                             </div>
 
-                            {/* Color Dropdown */}
                             <span className="text-sm font-medium text-gray-700">Color:</span>
                             <div className="relative" ref={colorDropdownRef}>
                                 <button
@@ -1232,7 +1220,6 @@
                                 )}
                             </div>
 
-                            {/* Actions */}
                             <div className="flex items-center gap-2 ml-auto">
                                 {selectedElement && (selectedElement.type === 'shape' || selectedElement.type === 'text') && (
                                     <button
@@ -1266,7 +1253,6 @@
                         </div>
                     </div>
 
-                    {/* Canvas */}
                     <div className="flex-1 relative overflow-hidden">
                         <div
                             ref={canvasRef}
@@ -1305,7 +1291,6 @@
                         </div>
                     </div>
 
-                    {/* Status Bar */}
                     <div className="bg-white border-t border-gray-200 px-4 py-2">
                         <div className="flex items-center justify-between text-sm text-gray-600">
                             <span>
@@ -1324,11 +1309,11 @@
             );
         };
 
-        // Use React 18's createRoot API
         const container = document.getElementById('preview-app');
         const root = ReactDOM.createRoot(container);
         root.render(<FlowchartApp />);
     </script>
+
 
 
 
