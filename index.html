@@ -1,4 +1,12 @@
-<!DOCTYPE html><html><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;"><meta http-equiv="x-dns-prefetch-control" content="off"><meta name="x-poe-datastore-behavior" content="disabled"><meta name="x-poe-allow-downloads" content="true"><script src="https://puc.poecdn.net/standard.25f6d5ebb7608dc2f276.js"></script>
+<!DOCTYPE html><html><head><meta http-equiv="Content-Security-Policy" content="
+    default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com;
+    connect-src 'self' https://text.pollinations.ai;
+    frame-src 'self' https://www.youtube.com https://trytako.com;
+    child-src 'self';
+    manifest-src 'self';
+    worker-src 'self';
+    upgrade-insecure-requests;
+    block-all-mixed-content;">
     <meta charset="utf-8">
     <title>Flowart</title>
     <link rel="icon" type="image/x-icon" href="icon.png">
@@ -17,920 +25,1093 @@
             font-size: 14px;
         }
     </style>
-  <script src="https://puc.poecdn.net/disableWebRTC.9710cebe07429a9e8e06.js"></script><script src="https://puc.poecdn.net/tw.b9024aecac666455e183.js"></script><script src="https://puc.poecdn.net/deps.faccd16000d314dc16d5.js"></script><script src="https://puc.poecdn.net/exports.b0f0f482cdeb5302b0b9.js"></script><script src="https://puc.poecdn.net/renderer.75c73ae6b4235f62945a.js"></script><script>Object.defineProperty(exports, "__esModule", {value: true}); function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; } function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }var _react = require('react'); var _react2 = _interopRequireDefault(_react);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var _lucidereact = require('lucide-react');
-
-const FlowchartApp = () => {
-  const [currentMode, setCurrentMode] = _react.useState.call(void 0, 'select');
-  const [shapes, setShapes] = _react.useState.call(void 0, []);
-  const [arrows, setArrows] = _react.useState.call(void 0, []);
-  const [freeTexts, setFreeTexts] = _react.useState.call(void 0, []);
-  const [selectedElement, setSelectedElement] = _react.useState.call(void 0, null);
-  const [nextId, setNextId] = _react.useState.call(void 0, 1);
-  const [currentColor, setCurrentColor] = _react.useState.call(void 0, '#e3f2fd');
-  const [canvasTransform, setCanvasTransform] = _react.useState.call(void 0, { x: 0, y: 0, scale: 1 });
-  const [dragData, setDragData] = _react.useState.call(void 0, null);
-  const [arrowStart, setArrowStart] = _react.useState.call(void 0, null);
-  const [isPanning, setIsPanning] = _react.useState.call(void 0, false);
-  const [panStart, setPanStart] = _react.useState.call(void 0, { x: 0, y: 0 });
-  const [isGenerating, setIsGenerating] = _react.useState.call(void 0, false);
-  const [aiPrompt, setAiPrompt] = _react.useState.call(void 0, '');
-  const [showGrid, setShowGrid] = _react.useState.call(void 0, true);
-  const [showColorDropdown, setShowColorDropdown] = _react.useState.call(void 0, false);
-  
-  const canvasRef = _react.useRef.call(void 0, null);
-  const fileInputRef = _react.useRef.call(void 0, null);
-  const colorDropdownRef = _react.useRef.call(void 0, null);
-
-  const colorGroups = {
-    'Light Colors': [
-      { color: '#e3f2fd', name: 'Light Blue' },
-      { color: '#f3e5f5', name: 'Light Purple' },
-      { color: '#e8f5e8', name: 'Light Green' },
-      { color: '#fff3e0', name: 'Light Orange' },
-      { color: '#ffebee', name: 'Light Pink' },
-      { color: '#f5f5f5', name: 'Light Gray' },
-      { color: '#fff9c4', name: 'Light Yellow' },
-      { color: '#ffffff', name: 'White' }
-    ],
-    'Standard Colors': [
-      { color: '#2196f3', name: 'Blue' },
-      { color: '#9c27b0', name: 'Purple' },
-      { color: '#4caf50', name: 'Green' },
-      { color: '#ff9800', name: 'Orange' },
-      { color: '#f44336', name: 'Red' },
-      { color: '#607d8b', name: 'Blue Gray' },
-      { color: '#ffeb3b', name: 'Yellow' },
-      { color: '#795548', name: 'Brown' }
-    ],
-    'Dark Colors': [
-      { color: '#1a1a1a', name: 'Very Dark Gray' },
-      { color: '#333333', name: 'Dark Gray' },
-      { color: '#000000', name: 'Black' },
-      { color: '#263238', name: 'Dark Blue Gray' }
-    ]
-  };
-
-  const shapeTypes = [
-    { type: 'rectangle', icon: _lucidereact.Square, label: 'Process' },
-    { type: 'ellipse', icon: _lucidereact.Circle, label: 'Start/End' },
-    { type: 'diamond', icon: _lucidereact.Diamond, label: 'Decision' },
-    { type: 'hexagon', icon: _lucidereact.Hexagon, label: 'Preparation' },
-  ];
-
-  const connectionPoints = {
-    rectangle: [
-      { x: 0.5, y: 0, id: 'top' },
-      { x: 1, y: 0.5, id: 'right' },
-      { x: 0.5, y: 1, id: 'bottom' },
-      { x: 0, y: 0.5, id: 'left' }
-    ],
-    ellipse: [
-      { x: 0.5, y: 0, id: 'top' },
-      { x: 1, y: 0.5, id: 'right' },
-      { x: 0.5, y: 1, id: 'bottom' },
-      { x: 0, y: 0.5, id: 'left' }
-    ],
-    diamond: [
-      { x: 0.5, y: 0, id: 'top' },
-      { x: 1, y: 0.5, id: 'right' },
-      { x: 0.5, y: 1, id: 'bottom' },
-      { x: 0, y: 0.5, id: 'left' }
-    ],
-    hexagon: [
-      { x: 0.5, y: 0, id: 'top' },
-      { x: 1, y: 0.5, id: 'right' },
-      { x: 0.5, y: 1, id: 'bottom' },
-      { x: 0, y: 0.5, id: 'left' }
-    ]
-  };
-
-  const getCurrentColorName = () => {
-    for (const group of Object.values(colorGroups)) {
-      const colorItem = group.find(item => item.color === currentColor);
-      if (colorItem) return colorItem.name;
-    }
-    return currentColor;
-  };
-
-  // Close dropdown when clicking outside
-  _react.useEffect.call(void 0, () => {
-    const handleClickOutside = (event) => {
-      if (colorDropdownRef.current && !colorDropdownRef.current.contains(event.target)) {
-        setShowColorDropdown(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const getCanvasCoordinates = _react.useCallback.call(void 0, (clientX, clientY) => {
-    if (!canvasRef.current) return { x: 0, y: 0 };
-    const rect = canvasRef.current.getBoundingClientRect();
-    return {
-      x: (clientX - rect.left - canvasTransform.x) / canvasTransform.scale,
-      y: (clientY - rect.top - canvasTransform.y) / canvasTransform.scale
-    };
-  }, [canvasTransform]);
-
-  const generateOrthogonalPath = (x1, y1, x2, y2, startPoint, endPoint) => {
-    const offset = 30;
-    let path = `M ${x1} ${y1}`;
-
-    // Add offset from start point
-    let startOffsetX = x1, startOffsetY = y1;
-    switch (startPoint) {
-      case 'top': startOffsetY -= offset; break;
-      case 'bottom': startOffsetY += offset; break;
-      case 'left': startOffsetX -= offset; break;
-      case 'right': startOffsetX += offset; break;
-    }
-
-    // Add offset to end point
-    let endOffsetX = x2, endOffsetY = y2;
-    switch (endPoint) {
-      case 'top': endOffsetY -= offset; break;
-      case 'bottom': endOffsetY += offset; break;
-      case 'left': endOffsetX -= offset; break;
-      case 'right': endOffsetX += offset; break;
-    }
-
-    // Line to start offset
-    path += ` L ${startOffsetX} ${startOffsetY}`;
-
-    // Orthogonal routing between offset points
-    if (Math.abs(endOffsetX - startOffsetX) > Math.abs(endOffsetY - startOffsetY)) {
-      const midX = (startOffsetX + endOffsetX) / 2;
-      path += ` L ${midX} ${startOffsetY} L ${midX} ${endOffsetY}`;
-    } else {
-      const midY = (startOffsetY + endOffsetY) / 2;
-      path += ` L ${startOffsetX} ${midY} L ${endOffsetX} ${midY}`;
-    }
-
-    // Line to end offset and final point
-    path += ` L ${endOffsetX} ${endOffsetY} L ${x2} ${y2}`;
-
-    return path;
-  };
-
-  const createShape = _react.useCallback.call(void 0, (type, x, y) => {
-    const shape = {
-      id: nextId,
-      type,
-      x: x - 50,
-      y: y - 25,
-      width: 100,
-      height: 50,
-      text: type === 'ellipse' ? 'Start/End' : type === 'diamond' ? 'Decision?' : 'Process',
-      color: currentColor
-    };
-
-    if (type === 'diamond') {
-      shape.width = 120;
-      shape.height = 60;
-    }
-
-    setShapes(prev => [...prev, shape]);
-    setNextId(prev => prev + 1);
-    setSelectedElement({ type: 'shape', id: nextId });
-    setCurrentMode('select');
-  }, [nextId, currentColor]);
-
-  const createFreeText = _react.useCallback.call(void 0, (x, y) => {
-    const text = {
-      id: nextId,
-      x,
-      y,
-      text: 'New Text',
-      color: '#000000'
-    };
-
-    setFreeTexts(prev => [...prev, text]);
-    setNextId(prev => prev + 1);
-    setSelectedElement({ type: 'text', id: nextId });
-    setCurrentMode('select');
-  }, [nextId]);
-
-  const createArrow = _react.useCallback.call(void 0, (startShape, startPoint, endShape, endPoint) => {
-    const arrow = {
-      id: nextId,
-      startId: startShape.id,
-      startPoint,
-      endId: endShape.id,
-      endPoint,
-      color: '#374151'
-    };
-
-    setArrows(prev => [...prev, arrow]);
-    setNextId(prev => prev + 1);
-    setArrowStart(null);
-    setCurrentMode('select');
-  }, [nextId]);
-
-  const handleCanvasClick = _react.useCallback.call(void 0, (e) => {
-    if (isPanning) return;
-
-    const coords = getCanvasCoordinates(e.clientX, e.clientY);
-
-    if (shapeTypes.some(s => s.type === currentMode)) {
-      createShape(currentMode, coords.x, coords.y);
-    } else if (currentMode === 'text') {
-      createFreeText(coords.x, coords.y);
-    } else if (currentMode === 'select') {
-      setSelectedElement(null);
-    }
-  }, [currentMode, createShape, createFreeText, getCanvasCoordinates, isPanning]);
-
-  const handleConnectionPointClick = _react.useCallback.call(void 0, (shapeId, pointId) => {
-    if (currentMode !== 'arrow') return;
-
-    const shape = shapes.find(s => s.id === shapeId);
-    if (!shape) return;
-
-    if (!arrowStart) {
-      setArrowStart({ shape, pointId });
-    } else if (arrowStart.shape.id !== shapeId) {
-      createArrow(arrowStart.shape, arrowStart.pointId, shape, pointId);
-    }
-  }, [currentMode, shapes, arrowStart, createArrow]);
-
-  const getConnectionPointPosition = _react.useCallback.call(void 0, (shape, pointId) => {
-    const points = connectionPoints[shape.type] || connectionPoints.rectangle;
-    const point = points.find(p => p.id === pointId) || points[0];
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="preview-app"></div>
     
-    return {
-      x: shape.x + point.x * shape.width,
-      y: shape.y + point.y * shape.height
-    };
-  }, []);
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useCallback } = React;
 
-  const handleMouseDown = _react.useCallback.call(void 0, (e) => {
-    if (currentMode === 'pan') {
-      setIsPanning(true);
-      setPanStart({ x: e.clientX - canvasTransform.x, y: e.clientY - canvasTransform.y });
-      return;
-    }
-
-    const target = e.target;
-    const shapeId = target.dataset.shapeId;
-    const textId = target.dataset.textId;
-
-    if (shapeId && currentMode === 'select') {
-      const coords = getCanvasCoordinates(e.clientX, e.clientY);
-      const shape = shapes.find(s => s.id === parseInt(shapeId));
-      if (shape) {
-        setDragData({
-          type: 'shape',
-          id: parseInt(shapeId),
-          startX: coords.x - shape.x,
-          startY: coords.y - shape.y
-        });
-        setSelectedElement({ type: 'shape', id: parseInt(shapeId) });
-      }
-    } else if (textId && currentMode === 'select') {
-      const coords = getCanvasCoordinates(e.clientX, e.clientY);
-      const text = freeTexts.find(t => t.id === parseInt(textId));
-      if (text) {
-        setDragData({
-          type: 'text',
-          id: parseInt(textId),
-          startX: coords.x - text.x,
-          startY: coords.y - text.y
-        });
-        setSelectedElement({ type: 'text', id: parseInt(textId) });
-      }
-    }
-  }, [currentMode, canvasTransform, getCanvasCoordinates, shapes, freeTexts]);
-
-  const handleMouseMove = _react.useCallback.call(void 0, (e) => {
-    if (isPanning) {
-      setCanvasTransform(prev => ({
-        ...prev,
-        x: e.clientX - panStart.x,
-        y: e.clientY - panStart.y
-      }));
-      return;
-    }
-
-    if (!dragData) return;
-
-    const coords = getCanvasCoordinates(e.clientX, e.clientY);
-
-    if (dragData.type === 'shape') {
-      setShapes(prev => prev.map(shape => 
-        shape.id === dragData.id 
-          ? { ...shape, x: coords.x - dragData.startX, y: coords.y - dragData.startY }
-          : shape
-      ));
-    } else if (dragData.type === 'text') {
-      setFreeTexts(prev => prev.map(text => 
-        text.id === dragData.id 
-          ? { ...text, x: coords.x - dragData.startX, y: coords.y - dragData.startY }
-          : text
-      ));
-    }
-  }, [isPanning, panStart, dragData, getCanvasCoordinates]);
-
-  const handleMouseUp = _react.useCallback.call(void 0, () => {
-    setIsPanning(false);
-    setDragData(null);
-  }, []);
-
-  const zoomIn = () => {
-    setCanvasTransform(prev => ({ ...prev, scale: Math.min(3, prev.scale + 0.1) }));
-  };
-
-  const zoomOut = () => {
-    setCanvasTransform(prev => ({ ...prev, scale: Math.max(0.3, prev.scale - 0.1) }));
-  };
-
-  const resetView = () => {
-    setCanvasTransform({ x: 0, y: 0, scale: 1 });
-  };
-
-  const toggleGrid = () => {
-    setShowGrid(prev => !prev);
-  };
-
-  const deleteSelected = () => {
-    if (!selectedElement) return;
-
-    if (selectedElement.type === 'shape') {
-      setShapes(prev => prev.filter(s => s.id !== selectedElement.id));
-      setArrows(prev => prev.filter(a => a.startId !== selectedElement.id && a.endId !== selectedElement.id));
-    } else if (selectedElement.type === 'arrow') {
-      setArrows(prev => prev.filter(a => a.id !== selectedElement.id));
-    } else if (selectedElement.type === 'text') {
-      setFreeTexts(prev => prev.filter(t => t.id !== selectedElement.id));
-    }
-
-    setSelectedElement(null);
-  };
-
-  const clearCanvas = () => {
-    if (shapes.length === 0 && arrows.length === 0 && freeTexts.length === 0) {
-      return; // Nothing to clear
-    }
-    
-    if (window.confirm('Are you sure you want to clear the entire canvas? This action cannot be undone.')) {
-      setShapes([]);
-      setArrows([]);
-      setFreeTexts([]);
-      setSelectedElement(null);
-      setNextId(1);
-    }
-  };
-
-  const exportData = () => {
-    const data = { shapes, arrows, freeTexts };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'flowchart.json';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const importData = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const data = JSON.parse(event.target.result);
-        setShapes(data.shapes || []);
-        setArrows(data.arrows || []);
-        setFreeTexts(data.freeTexts || []);
-        const allIds = [...(data.shapes || []), ...(data.arrows || []), ...(data.freeTexts || [])].map(item => item.id);
-        setNextId(allIds.length > 0 ? Math.max(...allIds) + 1 : 1);
-      } catch (error) {
-        alert('Invalid JSON file');
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = '';
-  };
-
-  const generateAIFlowchart = async () => {
-    if (!aiPrompt.trim()) return;
-
-    setIsGenerating(true);
-    try {
-      const allColors = Object.values(colorGroups).flat().map(item => item.color);
-      const prompt = `Create a flowchart JSON for: "${aiPrompt}". Return only valid JSON with "shapes" array (id, type, x, y, width, height, text, color) and "arrows" array (id, startId, startPoint, endId, endPoint, color). Use types: rectangle, ellipse, diamond, hexagon. Use colors: ${allColors.join(', ')}.`;
-      
-      const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}`);
-      const text = await response.text();
-      
-      // Extract JSON from response
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const data = JSON.parse(jsonMatch[0]);
-        if (data.shapes) {
-          clearCanvasWithoutConfirm();
-          setShapes(data.shapes);
-          setArrows(data.arrows || []);
-          const allIds = [...data.shapes, ...(data.arrows || [])].map(item => item.id);
-          setNextId(allIds.length > 0 ? Math.max(...allIds) + 1 : 1);
-        }
-      }
-    } catch (error) {
-      console.error('AI generation failed:', error);
-      alert('Failed to generate flowchart. Please try again.');
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const clearCanvasWithoutConfirm = () => {
-    setShapes([]);
-    setArrows([]);
-    setFreeTexts([]);
-    setSelectedElement(null);
-    setNextId(1);
-  };
-
-  _react.useEffect.call(void 0, () => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Delete' && selectedElement) {
-        deleteSelected();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [selectedElement]);
-
-  const renderShape = (shape) => {
-    const isSelected = _optionalChain([selectedElement, 'optionalAccess', _ => _.type]) === 'shape' && selectedElement.id === shape.id;
-    const points = connectionPoints[shape.type] || connectionPoints.rectangle;
-
-    let shapeElement;
-    switch (shape.type) {
-      case 'ellipse':
-        shapeElement = (
-          _react2.default.createElement('ellipse', {
-            cx: shape.x + shape.width / 2,
-            cy: shape.y + shape.height / 2,
-            rx: shape.width / 2,
-            ry: shape.height / 2,
-            fill: shape.color,
-            stroke: isSelected ? '#3b82f6' : '#374151',
-            strokeWidth: isSelected ? 3 : 2,
-            strokeDasharray: isSelected ? '5,5' : 'none',}
-          )
+        // Simple SVG icon components
+        const Icon = ({ d, size = 18, ...props }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+                <path d={d} />
+            </svg>
         );
-        break;
-      case 'diamond':
-        const diamondPoints = `${shape.x + shape.width/2},${shape.y} ${shape.x + shape.width},${shape.y + shape.height/2} ${shape.x + shape.width/2},${shape.y + shape.height} ${shape.x},${shape.y + shape.height/2}`;
-        shapeElement = (
-          _react2.default.createElement('polygon', {
-            points: diamondPoints,
-            fill: shape.color,
-            stroke: isSelected ? '#3b82f6' : '#374151',
-            strokeWidth: isSelected ? 3 : 2,
-            strokeDasharray: isSelected ? '5,5' : 'none',}
-          )
-        );
-        break;
-      case 'hexagon':
-        const hexOffset = shape.width * 0.25;
-        const hexPoints = `${shape.x + hexOffset},${shape.y} ${shape.x + shape.width - hexOffset},${shape.y} ${shape.x + shape.width},${shape.y + shape.height/2} ${shape.x + shape.width - hexOffset},${shape.y + shape.height} ${shape.x + hexOffset},${shape.y + shape.height} ${shape.x},${shape.y + shape.height/2}`;
-        shapeElement = (
-          _react2.default.createElement('polygon', {
-            points: hexPoints,
-            fill: shape.color,
-            stroke: isSelected ? '#3b82f6' : '#374151',
-            strokeWidth: isSelected ? 3 : 2,
-            strokeDasharray: isSelected ? '5,5' : 'none',}
-          )
-        );
-        break;
-      default: // rectangle
-        shapeElement = (
-          _react2.default.createElement('rect', {
-            x: shape.x,
-            y: shape.y,
-            width: shape.width,
-            height: shape.height,
-            rx: 5,
-            fill: shape.color,
-            stroke: isSelected ? '#3b82f6' : '#374151',
-            strokeWidth: isSelected ? 3 : 2,
-            strokeDasharray: isSelected ? '5,5' : 'none',}
-          )
-        );
-    }
 
-    return (
-      _react2.default.createElement('g', { key: shape.id,}
-        , _react2.default.createElement('g', {
-          'data-shape-id': shape.id,
-          style: { cursor: currentMode === 'select' ? 'move' : 'default' },}
+        const MousePointer = (props) => <Icon d="m3 3 7.07 16.97 2.51-7.39 7.39-2.51L3 3z" {...props} />;
+        const Type = (props) => <Icon d="M21 15V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6m18 0a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2m18 0V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6" {...props} />;
+        const ArrowRight = (props) => <Icon d="M5 12h14m-7-7 7 7-7 7" {...props} />;
+        const Move = (props) => <Icon d="M5 9l-3 3 3 3M9 5l3-3 3 3m0 8l-3 3-3-3M15 5l3-3 3 3-3 3-3-3z" {...props} />;
+        const Square = (props) => <Icon d="M3 3h18v18H3z" {...props} />;
+        const Circle = (props) => <Icon d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" {...props} />;
+        const Diamond = (props) => <Icon d="M6 3h12l4 6-10 13L2 9l4-6z" {...props} />;
+        const Hexagon = (props) => <Icon d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" {...props} />;
+        const ZoomIn = (props) => <Icon d="m9 9 3 3m0 0 3-3m-3 3V3m0 18c6.075 0 11-4.925 11-11S18.075 0 12 0 1 4.925 1 11s4.925 11 11 11z" {...props} />;
+        const ZoomOut = (props) => <Icon d="m15 9-6 0m0 0 0 0m0 0V3m0 18c6.075 0 11-4.925 11-11S18.075 0 12 0 1 4.925 1 11s4.925 11 11 11z" {...props} />;
+        const RotateCcw = (props) => <Icon d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" {...props} />;
+        const Grid3X3 = (props) => <Icon d="M3 3v18h18V3H3zm6 0v18M15 3v18M3 9h18M3 15h18" {...props} />;
+        const Download = (props) => <Icon d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5l5 5 5-5m-5 5V3" {...props} />;
+        const Upload = (props) => <Icon d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5l5-5 5 5m-5-5v12" {...props} />;
+        const Trash2 = (props) => <Icon d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m-6 5v6m4-6v6" {...props} />;
+        const X = (props) => <Icon d="M18 6L6 18M6 6l12 12" {...props} />;
+        const Bot = (props) => <Icon d="M12 8V4H8v4m4-4h4v4h-4zM8 8H4v8h4V8zm8 0h4v8h-4V8zM8 16H4v4h4v-4zm8 0h4v4h-4v-4z" {...props} />;
+        const ChevronDown = (props) => <Icon d="m6 9 6 6 6-6" {...props} />;
+        const Edit2 = (props) => <Icon d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" {...props} />;
 
-          , shapeElement
-        )
-
-        , _react2.default.createElement('text', {
-          x: shape.x + shape.width / 2,
-          y: shape.y + shape.height / 2,
-          textAnchor: "middle",
-          dominantBaseline: "middle",
-          fontSize: "14",
-          fontWeight: "500",
-          fill: "#374151",
-          pointerEvents: "none",
-          'data-shape-id': shape.id,}
-
-          , shape.text
-        )
-
-        , (currentMode === 'arrow' || isSelected) && points.map(point => {
-          const pointPos = getConnectionPointPosition(shape, point.id);
-          return (
-            _react2.default.createElement('circle', {
-              key: point.id,
-              cx: pointPos.x,
-              cy: pointPos.y,
-              r: 6,
-              fill: "#f59e0b",
-              stroke: "#ffffff",
-              strokeWidth: 2,
-              style: { cursor: 'crosshair' },
-              onClick: (e) => {
-                e.stopPropagation();
-                handleConnectionPointClick(shape.id, point.id);
-              },}
-            )
-          );
-        })
-      )
-    );
-  };
-
-  const renderArrow = (arrow) => {
-    const startShape = shapes.find(s => s.id === arrow.startId);
-    const endShape = shapes.find(s => s.id === arrow.endId);
-    
-    if (!startShape || !endShape) return null;
-
-    const startPos = getConnectionPointPosition(startShape, arrow.startPoint);
-    const endPos = getConnectionPointPosition(endShape, arrow.endPoint);
-    const pathData = generateOrthogonalPath(startPos.x, startPos.y, endPos.x, endPos.y, arrow.startPoint, arrow.endPoint);
-    
-    const isSelected = _optionalChain([selectedElement, 'optionalAccess', _2 => _2.type]) === 'arrow' && selectedElement.id === arrow.id;
-
-    return (
-      _react2.default.createElement('g', { key: arrow.id,}
-        , _react2.default.createElement('defs', null
-          , _react2.default.createElement('marker', {
-            id: `arrowhead-${arrow.id}`,
-            markerWidth: "10",
-            markerHeight: "7",
-            refX: "9",
-            refY: "3.5",
-            orient: "auto",}
-
-            , _react2.default.createElement('polygon', {
-              points: "0 0, 10 3.5, 0 7"     ,
-              fill: arrow.color,}
-            )
-          )
-        )
-
-        , _react2.default.createElement('path', {
-          d: pathData,
-          stroke: "transparent",
-          strokeWidth: "15",
-          fill: "none",
-          style: { cursor: 'pointer' },
-          onClick: (e) => {
-            e.stopPropagation();
-            setSelectedElement({ type: 'arrow', id: arrow.id });
-          },}
-        )
-
-        , _react2.default.createElement('path', {
-          d: pathData,
-          stroke: arrow.color,
-          strokeWidth: isSelected ? 4 : 2,
-          strokeDasharray: isSelected ? '8,4' : 'none',
-          fill: "none",
-          markerEnd: `url(#arrowhead-${arrow.id})`,
-          pointerEvents: "none",}
-        )
-      )
-    );
-  };
-
-  const renderFreeText = (text) => {
-    const isSelected = _optionalChain([selectedElement, 'optionalAccess', _3 => _3.type]) === 'text' && selectedElement.id === text.id;
-    
-    return (
-      _react2.default.createElement('text', {
-        key: text.id,
-        x: text.x,
-        y: text.y,
-        fontSize: "14",
-        fontWeight: "500",
-        fill: isSelected ? '#3b82f6' : text.color,
-        style: { cursor: currentMode === 'select' ? 'move' : 'default' },
-        'data-text-id': text.id,}
-
-        , text.text
-      )
-    );
-  };
-
-  return (
-    _react2.default.createElement('div', { className: "h-screen flex flex-col bg-gray-50"   ,}
-      /* Header */
-      , _react2.default.createElement('div', { className: "bg-white border-b border-gray-200 p-4"   ,}
-        , _react2.default.createElement('div', { className: "flex items-center justify-between gap-4"   ,}
-          , _react2.default.createElement('div', { className: "app-icon"   ,}, "M" )
-          , _react2.default.createElement('h1', { className: "text-2xl font-bold text-gray-900 flex-shrink-0"   ,}, "Flowart" )
-
-          /* AI Generator */
-          , _react2.default.createElement('div', { className: "flex items-center gap-3 flex-1 max-w-none"    ,}
-            , _react2.default.createElement('div', { className: "flex items-center gap-3 w-full max-w-2xl"    ,}
-              , _react2.default.createElement('input', {
-                type: "text",
-                placeholder: "Describe your flowchart in detail (e.g., 'Create a user login process with validation, error handling, and success redirect')..."                 ,
-                value: aiPrompt,
-                onChange: (e) => setAiPrompt(e.target.value),
-                className: "flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"          ,
-                onKeyDown: (e) => e.key === 'Enter' && generateAIFlowchart(),}
-              )
-              , _react2.default.createElement('button', {
-                onClick: generateAIFlowchart,
-                disabled: isGenerating || !aiPrompt.trim(),
-                className: "px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap"           ,}
-
-                , _react2.default.createElement(_lucidereact.Bot, { size: 18,} )
-                , isGenerating ? 'Generating...' : 'AI Generate'
-              )
-            )
-          )
-
-          /* File Operations */
-          , _react2.default.createElement('div', { className: "flex items-center gap-2 flex-shrink-0"   ,}
-            , _react2.default.createElement('button', {
-              onClick: exportData,
-              className: "p-2 text-gray-600 hover:bg-gray-100 rounded-lg"   ,
-              title: "Export JSON" ,}
-
-              , _react2.default.createElement(_lucidereact.Download, { size: 20,} )
-            )
-            , _react2.default.createElement('button', {
-              onClick: () => _optionalChain([fileInputRef, 'access', _4 => _4.current, 'optionalAccess', _5 => _5.click, 'call', _6 => _6()]),
-              className: "p-2 text-gray-600 hover:bg-gray-100 rounded-lg"   ,
-              title: "Import JSON" ,}
-
-              , _react2.default.createElement(_lucidereact.Upload, { size: 20,} )
-            )
-            , _react2.default.createElement('input', {
-              ref: fileInputRef,
-              type: "file",
-              accept: ".json",
-              onChange: importData,
-              className: "hidden",}
-            )
-          )
-        )
-      )
-
-      /* Toolbar */
-      , _react2.default.createElement('div', { className: "bg-white border-b border-gray-200 p-4"   ,}
-        , _react2.default.createElement('div', { className: "flex items-center gap-6 flex-wrap"   ,}
-          /* Mode Tools */
-          , _react2.default.createElement('div', { className: "flex items-center gap-2"  ,}
-            , _react2.default.createElement('span', { className: "text-sm font-medium text-gray-700"  ,}, "Mode:")
-            , _react2.default.createElement('button', {
-              onClick: () => setCurrentMode('select'),
-              className: `p-2 rounded-lg ${currentMode === 'select' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`,
-              title: "Select",}
-
-              , _react2.default.createElement(_lucidereact.MousePointer, { size: 18,} )
-            )
-            , _react2.default.createElement('button', {
-              onClick: () => setCurrentMode('text'),
-              className: `p-2 rounded-lg ${currentMode === 'text' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`,
-              title: "Text",}
-
-              , _react2.default.createElement(_lucidereact.Type, { size: 18,} )
-            )
-            , _react2.default.createElement('button', {
-              onClick: () => setCurrentMode('arrow'),
-              className: `p-2 rounded-lg ${currentMode === 'arrow' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`,
-              title: "Arrow",}
-
-              , _react2.default.createElement(_lucidereact.ArrowRight, { size: 18,} )
-            )
-            , _react2.default.createElement('button', {
-              onClick: () => setCurrentMode('pan'),
-              className: `p-2 rounded-lg ${currentMode === 'pan' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`,
-              title: "Pan",}
-
-              , _react2.default.createElement(_lucidereact.Move, { size: 18,} )
-            )
-          )
-
-          /* Shape Tools */
-          , _react2.default.createElement('div', { className: "flex items-center gap-2"  ,}
-            , _react2.default.createElement('span', { className: "text-sm font-medium text-gray-700"  ,}, "Shapes:")
-            , shapeTypes.map(({ type, icon: Icon, label }) => (
-              _react2.default.createElement('button', {
-                key: type,
-                onClick: () => setCurrentMode(type),
-                className: `p-2 rounded-lg ${currentMode === type ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`,
-                title: label,}
-
-                , _react2.default.createElement(Icon, { size: 18,} )
-              )
-            ))
-          )
-
-          /* View Controls */
-          , _react2.default.createElement('div', { className: "flex items-center gap-2"  ,}
-            , _react2.default.createElement('span', { className: "text-sm font-medium text-gray-700"  ,}, "View:")
-            , _react2.default.createElement('button', { onClick: zoomIn, className: "p-2 text-gray-600 hover:bg-gray-100 rounded-lg"   , title: "Zoom In" ,}
-              , _react2.default.createElement(_lucidereact.ZoomIn, { size: 18,} )
-            )
-            , _react2.default.createElement('span', { className: "text-sm text-gray-600 min-w-12 text-center"   ,}
-              , Math.round(canvasTransform.scale * 100), "%"
-            )
-            , _react2.default.createElement('button', { onClick: zoomOut, className: "p-2 text-gray-600 hover:bg-gray-100 rounded-lg"   , title: "Zoom Out" ,}
-              , _react2.default.createElement(_lucidereact.ZoomOut, { size: 18,} )
-            )
-            , _react2.default.createElement('button', { onClick: resetView, className: "p-2 text-gray-600 hover:bg-gray-100 rounded-lg"   , title: "Reset View" ,}
-              , _react2.default.createElement(_lucidereact.RotateCcw, { size: 18,} )
-            )
-            , _react2.default.createElement('button', {
-              onClick: toggleGrid,
-              className: `p-2 rounded-lg ${showGrid ? 'bg-gray-200 text-gray-800' : 'text-gray-600 hover:bg-gray-100'}`,
-              title: showGrid ? 'Hide Grid' : 'Show Grid',}
-
-              , _react2.default.createElement(_lucidereact.Grid3X3, { size: 18,} )
-            )
-          )
-
-          /* Color Dropdown */
-          , _react2.default.createElement('span', { className: "text-sm font-medium text-gray-700"   ,}, "Color:")
-          , _react2.default.createElement('div', { className: "relative", ref: colorDropdownRef,}
-            , _react2.default.createElement('button', {
-              onClick: () => setShowColorDropdown(!showColorDropdown),
-              className: "flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"           ,}
-
-              , _react2.default.createElement('div', {
-                className: "w-5 h-5 rounded border border-gray-400"    ,
-                style: { backgroundColor: currentColor },}
-              )
-              , _react2.default.createElement('span', { className: "text-sm text-gray-700" ,}, getCurrentColorName())
-              , _react2.default.createElement(_lucidereact.ChevronDown, { size: 16, className: "text-gray-500",} )
-            )
-
-            , showColorDropdown && (
-              _react2.default.createElement('div', { className: "absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-64"          ,}
-                , Object.entries(colorGroups).map(([groupName, colors]) => (
-                  _react2.default.createElement('div', { key: groupName, className: "p-3",}
-                    , _react2.default.createElement('h4', { className: "text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2"     ,}
-                      , groupName
-                    )
-                    , _react2.default.createElement('div', { className: "grid grid-cols-4 gap-2"  ,}
-                      , colors.map(({ color, name }) => (
-                        _react2.default.createElement('button', {
-                          key: color,
-                          onClick: () => {
-                            setCurrentColor(color);
-                            setShowColorDropdown(false);
-                          },
-                          className: `flex items-center gap-2 p-2 rounded hover:bg-gray-50 text-left ${
-                            currentColor === color ? 'bg-blue-50 ring-2 ring-blue-500' : ''
-                          }`,
-                          title: name,}
-
-                          , _react2.default.createElement('div', {
-                            className: "w-4 h-4 rounded border border-gray-300 flex-shrink-0"     ,
-                            style: { backgroundColor: color },}
-                          )
-                          , _react2.default.createElement('span', { className: "text-xs text-gray-700 truncate"  ,}, name)
-                        )
-                      ))
-                    )
-                  )
-                ))
-              )
-            )
-          )
-
-          /* Actions */
-          , _react2.default.createElement('div', { className: "flex items-center gap-2 ml-auto"   ,}
-            , _react2.default.createElement('button', {
-              onClick: deleteSelected,
-              disabled: !selectedElement,
-              className: "flex items-center gap-1 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"         ,
-              title: "Delete Selected Element"  ,}
-
-              , _react2.default.createElement(_lucidereact.Trash2, { size: 16,} )
-              , _react2.default.createElement('span', { className: "text-sm",}, "Delete")
-            )
-            , _react2.default.createElement('button', {
-              onClick: clearCanvas,
-              disabled: shapes.length === 0 && arrows.length === 0 && freeTexts.length === 0,
-              className: "flex items-center gap-1 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"         ,
-              title: "Clear Entire Canvas"  ,}
-
-              , _react2.default.createElement(_lucidereact.X, { size: 16,} )
-              , _react2.default.createElement('span', { className: "text-sm",}, "Clear All" )
-            )
-          )
-        )
-      )
-
-      /* Canvas */
-      , _react2.default.createElement('div', { className: "flex-1 relative overflow-hidden"  ,}
-        , _react2.default.createElement('div', {
-          ref: canvasRef,
-          className: "w-full h-full" ,
-          onMouseDown: handleMouseDown,
-          onMouseMove: handleMouseMove,
-          onMouseUp: handleMouseUp,
-          style: { cursor: currentMode === 'pan' ? 'grab' : isPanning ? 'grabbing' : 'default' },}
-
-          , _react2.default.createElement('svg', {
-            className: "w-full h-full" ,
-            onClick: handleCanvasClick,
-            style: {
-              transform: `translate(${canvasTransform.x}px, ${canvasTransform.y}px) scale(${canvasTransform.scale})`,
-              transformOrigin: '0 0'
-            },}
-
-            , _react2.default.createElement('defs', null
-              , showGrid && (
-                _react2.default.createElement('pattern', { id: "grid", width: "20", height: "20", patternUnits: "userSpaceOnUse",}
-                  , _react2.default.createElement('path', { d: "M 20 0 L 0 0 0 20"       , fill: "none", stroke: "#e5e7eb", strokeWidth: "1",} )
-                )
-              )
-            )
-
-            , _react2.default.createElement('rect', { 
-              width: "100%", 
-              height: "100%", 
-              fill: showGrid ? "url(#grid)" : "#ffffff",} 
-            )
-
-            , arrows.map(renderArrow)
-            , shapes.map(renderShape)
-            , freeTexts.map(renderFreeText)
-          )
-        )
-      )
-
-      /* Status Bar */
-      , _react2.default.createElement('div', { className: "bg-white border-t border-gray-200 px-4 py-2"    ,}
-        , _react2.default.createElement('div', { className: "flex items-center justify-between text-sm text-gray-600"    ,}
-          , _react2.default.createElement('span', null
-            , selectedElement ? 
-              `Selected: ${selectedElement.type} (ID: ${selectedElement.id})` : 
-              'No selection'
+        const FlowchartApp = () => {
+            const [currentMode, setCurrentMode] = useState('select');
+            const [shapes, setShapes] = useState([]);
+            const [arrows, setArrows] = useState([]);
+            const [freeTexts, setFreeTexts] = useState([]);
+            const [selectedElement, setSelectedElement] = useState(null);
+            const [editingElement, setEditingElement] = useState(null);
+            const [nextId, setNextId] = useState(1);
+            const [currentColor, setCurrentColor] = useState('#e3f2fd');
+            const [canvasTransform, setCanvasTransform] = useState({ x: 0, y: 0, scale: 1 });
+            const [dragData, setDragData] = useState(null);
+            const [arrowStart, setArrowStart] = useState(null);
+            const [isPanning, setIsPanning] = useState(false);
+            const [panStart, setPanStart] = useState({ x: 0, y: 0 });
+            const [isGenerating, setIsGenerating] = useState(false);
+            const [aiPrompt, setAiPrompt] = useState('');
+            const [showGrid, setShowGrid] = useState(true);
+            const [showColorDropdown, setShowColorDropdown] = useState(false);
             
-          )
-          , _react2.default.createElement('div', { className: "flex items-center gap-4"  ,}
-            , _react2.default.createElement('span', null, "Grid: " , showGrid ? 'ON' : 'OFF')
-            , _react2.default.createElement('span', null, "Shapes: " , shapes.length, " | Arrows: "   , arrows.length, " | Texts: "   , freeTexts.length)
-          )
-        )
-      )
-    )
-  );
-};
+            const canvasRef = useRef(null);
+            const fileInputRef = useRef(null);
+            const colorDropdownRef = useRef(null);
 
-exports. default = FlowchartApp;
-</script></head>
-  <body>
-  
+            const colorGroups = {
+                'Light Colors': [
+                    { color: '#e3f2fd', name: 'Light Blue' },
+                    { color: '#f3e5f5', name: 'Light Purple' },
+                    { color: '#e8f5e8', name: 'Light Green' },
+                    { color: '#fff3e0', name: 'Light Orange' },
+                    { color: '#ffebee', name: 'Light Pink' },
+                    { color: '#f5f5f5', name: 'Light Gray' },
+                    { color: '#fff9c4', name: 'Light Yellow' },
+                    { color: '#ffffff', name: 'White' }
+                ],
+                'Standard Colors': [
+                    { color: '#2196f3', name: 'Blue' },
+                    { color: '#9c27b0', name: 'Purple' },
+                    { color: '#4caf50', name: 'Green' },
+                    { color: '#ff9800', name: 'Orange' },
+                    { color: '#f44336', name: 'Red' },
+                    { color: '#607d8b', name: 'Blue Gray' },
+                    { color: '#ffeb3b', name: 'Yellow' },
+                    { color: '#795548', name: 'Brown' }
+                ],
+                'Dark Colors': [
+                    { color: '#1a1a1a', name: 'Very Dark Gray' },
+                    { color: '#333333', name: 'Dark Gray' },
+                    { color: '#000000', name: 'Black' },
+                    { color: '#263238', name: 'Dark Blue Gray' }
+                ]
+            };
 
-<div id="preview-app"></div></body></html>
+            const shapeTypes = [
+                { type: 'rectangle', icon: Square, label: 'Process' },
+                { type: 'ellipse', icon: Circle, label: 'Start/End' },
+                { type: 'diamond', icon: Diamond, label: 'Decision' },
+                { type: 'hexagon', icon: Hexagon, label: 'Preparation' },
+            ];
+
+            const connectionPoints = {
+                rectangle: [
+                    { x: 0.5, y: 0, id: 'top' },
+                    { x: 1, y: 0.5, id: 'right' },
+                    { x: 0.5, y: 1, id: 'bottom' },
+                    { x: 0, y: 0.5, id: 'left' }
+                ],
+                ellipse: [
+                    { x: 0.5, y: 0, id: 'top' },
+                    { x: 1, y: 0.5, id: 'right' },
+                    { x: 0.5, y: 1, id: 'bottom' },
+                    { x: 0, y: 0.5, id: 'left' }
+                ],
+                diamond: [
+                    { x: 0.5, y: 0, id: 'top' },
+                    { x: 1, y: 0.5, id: 'right' },
+                    { x: 0.5, y: 1, id: 'bottom' },
+                    { x: 0, y: 0.5, id: 'left' }
+                ],
+                hexagon: [
+                    { x: 0.5, y: 0, id: 'top' },
+                    { x: 1, y: 0.5, id: 'right' },
+                    { x: 0.5, y: 1, id: 'bottom' },
+                    { x: 0, y: 0.5, id: 'left' }
+                ]
+            };
+
+            const getCurrentColorName = () => {
+                for (const group of Object.values(colorGroups)) {
+                    const colorItem = group.find(item => item.color === currentColor);
+                    if (colorItem) return colorItem.name;
+                }
+                return currentColor;
+            };
+
+            useEffect(() => {
+                const handleClickOutside = (event) => {
+                    if (colorDropdownRef.current && !colorDropdownRef.current.contains(event.target)) {
+                        setShowColorDropdown(false);
+                    }
+                };
+
+                document.addEventListener('mousedown', handleClickOutside);
+                return () => document.removeEventListener('mousedown', handleClickOutside);
+            }, []);
+
+            const getCanvasCoordinates = useCallback((clientX, clientY) => {
+                if (!canvasRef.current) return { x: 0, y: 0 };
+                const rect = canvasRef.current.getBoundingClientRect();
+                return {
+                    x: (clientX - rect.left - canvasTransform.x) / canvasTransform.scale,
+                    y: (clientY - rect.top - canvasTransform.y) / canvasTransform.scale
+                };
+            }, [canvasTransform]);
+
+            const generateOrthogonalPath = (x1, y1, x2, y2, startPoint, endPoint) => {
+                const offset = 30;
+                let path = `M ${x1} ${y1}`;
+
+                let startOffsetX = x1, startOffsetY = y1;
+                switch (startPoint) {
+                    case 'top': startOffsetY -= offset; break;
+                    case 'bottom': startOffsetY += offset; break;
+                    case 'left': startOffsetX -= offset; break;
+                    case 'right': startOffsetX += offset; break;
+                }
+
+                let endOffsetX = x2, endOffsetY = y2;
+                switch (endPoint) {
+                    case 'top': endOffsetY -= offset; break;
+                    case 'bottom': endOffsetY += offset; break;
+                    case 'left': endOffsetX -= offset; break;
+                    case 'right': endOffsetX += offset; break;
+                }
+
+                path += ` L ${startOffsetX} ${startOffsetY}`;
+
+                if (Math.abs(endOffsetX - startOffsetX) > Math.abs(endOffsetY - startOffsetY)) {
+                    const midX = (startOffsetX + endOffsetX) / 2;
+                    path += ` L ${midX} ${startOffsetY} L ${midX} ${endOffsetY}`;
+                } else {
+                    const midY = (startOffsetY + endOffsetY) / 2;
+                    path += ` L ${startOffsetX} ${midY} L ${endOffsetX} ${midY}`;
+                }
+
+                path += ` L ${endOffsetX} ${endOffsetY} L ${x2} ${y2}`;
+                return path;
+            };
+
+            const createShape = useCallback((type, x, y) => {
+                const shape = {
+                    id: nextId,
+                    type,
+                    x: x - 50,
+                    y: y - 25,
+                    width: 100,
+                    height: 50,
+                    text: type === 'ellipse' ? 'Start/End' : type === 'diamond' ? 'Decision?' : 'Process',
+                    color: currentColor
+                };
+
+                if (type === 'diamond') {
+                    shape.width = 120;
+                    shape.height = 60;
+                }
+
+                setShapes(prev => [...prev, shape]);
+                setNextId(prev => prev + 1);
+                setSelectedElement({ type: 'shape', id: nextId });
+                setCurrentMode('select');
+            }, [nextId, currentColor]);
+
+            const createFreeText = useCallback((x, y) => {
+                const text = {
+                    id: nextId,
+                    x,
+                    y,
+                    text: 'New Text',
+                    color: '#000000'
+                };
+
+                setFreeTexts(prev => [...prev, text]);
+                setNextId(prev => prev + 1);
+                setSelectedElement({ type: 'text', id: nextId });
+                setCurrentMode('select');
+            }, [nextId]);
+
+            const createArrow = useCallback((startShape, startPoint, endShape, endPoint) => {
+                const arrow = {
+                    id: nextId,
+                    startId: startShape.id,
+                    startPoint,
+                    endId: endShape.id,
+                    endPoint,
+                    color: '#374151'
+                };
+
+                setArrows(prev => [...prev, arrow]);
+                setNextId(prev => prev + 1);
+                setArrowStart(null);
+                setCurrentMode('select');
+            }, [nextId]);
+
+            const handleCanvasClick = useCallback((e) => {
+                if (isPanning) return;
+                
+                const coords = getCanvasCoordinates(e.clientX, e.clientY);
+
+                if (shapeTypes.some(s => s.type === currentMode)) {
+                    createShape(currentMode, coords.x, coords.y);
+                } else if (currentMode === 'text') {
+                    createFreeText(coords.x, coords.y);
+                } else if (currentMode === 'select') {
+                    setSelectedElement(null);
+                    setEditingElement(null);
+                }
+            }, [currentMode, createShape, createFreeText, getCanvasCoordinates, isPanning]);
+
+            const handleConnectionPointClick = useCallback((shapeId, pointId) => {
+                if (currentMode !== 'arrow') return;
+
+                const shape = shapes.find(s => s.id === shapeId);
+                if (!shape) return;
+
+                if (!arrowStart) {
+                    setArrowStart({ shape, pointId });
+                } else if (arrowStart.shape.id !== shapeId) {
+                    createArrow(arrowStart.shape, arrowStart.pointId, shape, pointId);
+                }
+            }, [currentMode, shapes, arrowStart, createArrow]);
+
+            const getConnectionPointPosition = useCallback((shape, pointId) => {
+                const points = connectionPoints[shape.type] || connectionPoints.rectangle;
+                const point = points.find(p => p.id === pointId) || points[0];
+                
+                return {
+                    x: shape.x + point.x * shape.width,
+                    y: shape.y + point.y * shape.height
+                };
+            }, []);
+
+            const handleShapeClick = useCallback((e, shapeId) => {
+                e.stopPropagation();
+                if (currentMode === 'select') {
+                    setSelectedElement({ type: 'shape', id: shapeId });
+                    setEditingElement(null);
+                }
+            }, [currentMode]);
+
+            const handleTextClick = useCallback((e, textId) => {
+                e.stopPropagation();
+                if (currentMode === 'select') {
+                    setSelectedElement({ type: 'text', id: textId });
+                    setEditingElement(null);
+                }
+            }, [currentMode]);
+
+            const handleShapeDoubleClick = useCallback((e, shapeId) => {
+                e.stopPropagation();
+                if (currentMode === 'select') {
+                    setEditingElement({ type: 'shape', id: shapeId });
+                    setSelectedElement({ type: 'shape', id: shapeId });
+                }
+            }, [currentMode]);
+
+            const handleTextDoubleClick = useCallback((e, textId) => {
+                e.stopPropagation();
+                if (currentMode === 'select') {
+                    setEditingElement({ type: 'text', id: textId });
+                    setSelectedElement({ type: 'text', id: textId });
+                }
+            }, [currentMode]);
+
+            const handleMouseDown = useCallback((e) => {
+                if (currentMode === 'pan') {
+                    setIsPanning(true);
+                    setPanStart({ x: e.clientX - canvasTransform.x, y: e.clientY - canvasTransform.y });
+                    return;
+                }
+
+                if (currentMode !== 'select') return;
+
+                const shapeElement = e.target.closest('[data-shape-id]');
+                const textElement = e.target.closest('[data-text-id]');
+
+                if (shapeElement) {
+                    const shapeId = parseInt(shapeElement.dataset.shapeId);
+                    const coords = getCanvasCoordinates(e.clientX, e.clientY);
+                    const shape = shapes.find(s => s.id === shapeId);
+                    
+                    if (shape) {
+                        setDragData({
+                            type: 'shape',
+                            id: shapeId,
+                            startX: coords.x - shape.x,
+                            startY: coords.y - shape.y
+                        });
+                        setSelectedElement({ type: 'shape', id: shapeId });
+                    }
+                } else if (textElement) {
+                    const textId = parseInt(textElement.dataset.textId);
+                    const coords = getCanvasCoordinates(e.clientX, e.clientY);
+                    const text = freeTexts.find(t => t.id === textId);
+                    
+                    if (text) {
+                        setDragData({
+                            type: 'text',
+                            id: textId,
+                            startX: coords.x - text.x,
+                            startY: coords.y - text.y
+                        });
+                        setSelectedElement({ type: 'text', id: textId });
+                    }
+                }
+            }, [currentMode, canvasTransform, getCanvasCoordinates, shapes, freeTexts]);
+
+            const handleMouseMove = useCallback((e) => {
+                if (isPanning) {
+                    setCanvasTransform(prev => ({
+                        ...prev,
+                        x: e.clientX - panStart.x,
+                        y: e.clientY - panStart.y
+                    }));
+                    return;
+                }
+
+                if (!dragData) return;
+
+                const coords = getCanvasCoordinates(e.clientX, e.clientY);
+
+                if (dragData.type === 'shape') {
+                    setShapes(prev => prev.map(shape => 
+                        shape.id === dragData.id 
+                            ? { ...shape, x: coords.x - dragData.startX, y: coords.y - dragData.startY }
+                            : shape
+                    ));
+                } else if (dragData.type === 'text') {
+                    setFreeTexts(prev => prev.map(text => 
+                        text.id === dragData.id 
+                            ? { ...text, x: coords.x - dragData.startX, y: coords.y - dragData.startY }
+                            : text
+                    ));
+                }
+            }, [isPanning, panStart, dragData, getCanvasCoordinates]);
+
+            const handleMouseUp = useCallback(() => {
+                setIsPanning(false);
+                setDragData(null);
+            }, []);
+
+            const updateElementText = useCallback((newText) => {
+                if (!editingElement) return;
+
+                if (editingElement.type === 'shape') {
+                    setShapes(prev => prev.map(shape => 
+                        shape.id === editingElement.id 
+                            ? { ...shape, text: newText }
+                            : shape
+                    ));
+                } else if (editingElement.type === 'text') {
+                    setFreeTexts(prev => prev.map(text => 
+                        text.id === editingElement.id 
+                            ? { ...text, text: newText }
+                            : text
+                    ));
+                }
+            }, [editingElement]);
+
+            const zoomIn = () => {
+                setCanvasTransform(prev => ({ ...prev, scale: Math.min(3, prev.scale + 0.1) }));
+            };
+
+            const zoomOut = () => {
+                setCanvasTransform(prev => ({ ...prev, scale: Math.max(0.3, prev.scale - 0.1) }));
+            };
+
+            const resetView = () => {
+                setCanvasTransform({ x: 0, y: 0, scale: 1 });
+            };
+
+            const toggleGrid = () => {
+                setShowGrid(prev => !prev);
+            };
+
+            const deleteSelected = () => {
+                if (!selectedElement) return;
+
+                if (selectedElement.type === 'shape') {
+                    setShapes(prev => prev.filter(s => s.id !== selectedElement.id));
+                    setArrows(prev => prev.filter(a => a.startId !== selectedElement.id && a.endId !== selectedElement.id));
+                } else if (selectedElement.type === 'arrow') {
+                    setArrows(prev => prev.filter(a => a.id !== selectedElement.id));
+                } else if (selectedElement.type === 'text') {
+                    setFreeTexts(prev => prev.filter(t => t.id !== selectedElement.id));
+                }
+
+                setSelectedElement(null);
+                setEditingElement(null);
+            };
+
+            const startEditing = () => {
+                if (selectedElement) {
+                    setEditingElement(selectedElement);
+                }
+            };
+
+            const clearCanvas = () => {
+                if (shapes.length === 0 && arrows.length === 0 && freeTexts.length === 0) {
+                    return;
+                }
+                
+                if (window.confirm('Are you sure you want to clear the entire canvas? This action cannot be undone.')) {
+                    setShapes([]);
+                    setArrows([]);
+                    setFreeTexts([]);
+                    setSelectedElement(null);
+                    setEditingElement(null);
+                    setNextId(1);
+                }
+            };
+
+            const exportData = () => {
+                const data = { shapes, arrows, freeTexts };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'flowchart.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            };
+
+            const importData = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        setShapes(data.shapes || []);
+                        setArrows(data.arrows || []);
+                        setFreeTexts(data.freeTexts || []);
+                        const allIds = [...(data.shapes || []), ...(data.arrows || []), ...(data.freeTexts || [])].map(item => item.id);
+                        setNextId(allIds.length > 0 ? Math.max(...allIds) + 1 : 1);
+                    } catch (error) {
+                        alert('Invalid JSON file');
+                    }
+                };
+                reader.readAsText(file);
+                e.target.value = '';
+            };
+
+            const generateAIFlowchart = async () => {
+                if (!aiPrompt.trim()) return;
+
+                setIsGenerating(true);
+                try {
+                    const allColors = Object.values(colorGroups).flat().map(item => item.color);
+                    const prompt = `Create a flowchart JSON for: "${aiPrompt}". Return only valid JSON with "shapes" array (id, type, x, y, width, height, text, color) and "arrows" array (id, startId, startPoint, endId, endPoint, color). Use types: rectangle, ellipse, diamond, hexagon. Use colors: ${allColors.join(', ')}.`;
+                    
+                    const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}`);
+                    const text = await response.text();
+                    
+                    const jsonMatch = text.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        const data = JSON.parse(jsonMatch[0]);
+                        if (data.shapes) {
+                            clearCanvasWithoutConfirm();
+                            setShapes(data.shapes);
+                            setArrows(data.arrows || []);
+                            const allIds = [...data.shapes, ...(data.arrows || [])].map(item => item.id);
+                            setNextId(allIds.length > 0 ? Math.max(...allIds) + 1 : 1);
+                        }
+                    }
+                } catch (error) {
+                    console.error('AI generation failed:', error);
+                    alert('Failed to generate flowchart. Please try again.');
+                } finally {
+                    setIsGenerating(false);
+                }
+            };
+
+            const clearCanvasWithoutConfirm = () => {
+                setShapes([]);
+                setArrows([]);
+                setFreeTexts([]);
+                setSelectedElement(null);
+                setEditingElement(null);
+                setNextId(1);
+            };
+
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'Delete' && selectedElement && !editingElement) {
+                        deleteSelected();
+                    } else if (e.key === 'Escape') {
+                        setEditingElement(null);
+                    } else if (e.key === 'Enter' && editingElement) {
+                        setEditingElement(null);
+                    }
+                };
+
+                document.addEventListener('keydown', handleKeyDown);
+                return () => document.removeEventListener('keydown', handleKeyDown);
+            }, [selectedElement, editingElement]);
+
+            const renderShape = (shape) => {
+                const isSelected = selectedElement?.type === 'shape' && selectedElement.id === shape.id;
+                const isEditing = editingElement?.type === 'shape' && editingElement.id === shape.id;
+                const points = connectionPoints[shape.type] || connectionPoints.rectangle;
+
+                let shapeElement;
+                switch (shape.type) {
+                    case 'ellipse':
+                        shapeElement = (
+                            <ellipse
+                                cx={shape.x + shape.width / 2}
+                                cy={shape.y + shape.height / 2}
+                                rx={shape.width / 2}
+                                ry={shape.height / 2}
+                                fill={shape.color}
+                                stroke={isSelected ? '#3b82f6' : '#374151'}
+                                strokeWidth={isSelected ? 3 : 2}
+                                strokeDasharray={isSelected ? '5,5' : 'none'}
+                            />
+                        );
+                        break;
+                    case 'diamond':
+                        const diamondPoints = `${shape.x + shape.width/2},${shape.y} ${shape.x + shape.width},${shape.y + shape.height/2} ${shape.x + shape.width/2},${shape.y + shape.height} ${shape.x},${shape.y + shape.height/2}`;
+                        shapeElement = (
+                            <polygon
+                                points={diamondPoints}
+                                fill={shape.color}
+                                stroke={isSelected ? '#3b82f6' : '#374151'}
+                                strokeWidth={isSelected ? 3 : 2}
+                                strokeDasharray={isSelected ? '5,5' : 'none'}
+                            />
+                        );
+                        break;
+                    case 'hexagon':
+                        const hexOffset = shape.width * 0.25;
+                        const hexPoints = `${shape.x + hexOffset},${shape.y} ${shape.x + shape.width - hexOffset},${shape.y} ${shape.x + shape.width},${shape.y + shape.height/2} ${shape.x + shape.width - hexOffset},${shape.y + shape.height} ${shape.x + hexOffset},${shape.y + shape.height} ${shape.x},${shape.y + shape.height/2}`;
+                        shapeElement = (
+                            <polygon
+                                points={hexPoints}
+                                fill={shape.color}
+                                stroke={isSelected ? '#3b82f6' : '#374151'}
+                                strokeWidth={isSelected ? 3 : 2}
+                                strokeDasharray={isSelected ? '5,5' : 'none'}
+                            />
+                        );
+                        break;
+                    default:
+                        shapeElement = (
+                            <rect
+                                x={shape.x}
+                                y={shape.y}
+                                width={shape.width}
+                                height={shape.height}
+                                rx={5}
+                                fill={shape.color}
+                                stroke={isSelected ? '#3b82f6' : '#374151'}
+                                strokeWidth={isSelected ? 3 : 2}
+                                strokeDasharray={isSelected ? '5,5' : 'none'}
+                            />
+                        );
+                }
+
+                return (
+                    <g key={shape.id}>
+                        <g
+                            data-shape-id={shape.id}
+                            style={{ cursor: currentMode === 'select' ? 'move' : 'default' }}
+                            onClick={(e) => handleShapeClick(e, shape.id)}
+                            onDoubleClick={(e) => handleShapeDoubleClick(e, shape.id)}
+                        >
+                            {shapeElement}
+                        </g>
+
+                        {isEditing ? (
+                            <foreignObject
+                                x={shape.x}
+                                y={shape.y + shape.height / 2 - 10}
+                                width={shape.width}
+                                height={20}
+                            >
+                                <input
+                                    type="text"
+                                    defaultValue={shape.text}
+                                    autoFocus
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        border: 'none',
+                                        background: 'transparent',
+                                        textAlign: 'center',
+                                        fontSize: '14px',
+                                        fontWeight: '500',
+                                        color: '#374151',
+                                        outline: 'none'
+                                    }}
+                                    onBlur={(e) => {
+                                        updateElementText(e.target.value);
+                                        setEditingElement(null);
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            updateElementText(e.target.value);
+                                            setEditingElement(null);
+                                        } else if (e.key === 'Escape') {
+                                            setEditingElement(null);
+                                        }
+                                    }}
+                                />
+                            </foreignObject>
+                        ) : (
+                            <text
+                                x={shape.x + shape.width / 2}
+                                y={shape.y + shape.height / 2}
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                                fontSize="14"
+                                fontWeight="500"
+                                fill="#374151"
+                                pointerEvents="none"
+                                data-shape-id={shape.id}
+                            >
+                                {shape.text}
+                            </text>
+                        )}
+
+                        {(currentMode === 'arrow' || isSelected) && points.map(point => {
+                            const pointPos = getConnectionPointPosition(shape, point.id);
+                            return (
+                                <circle
+                                    key={point.id}
+                                    cx={pointPos.x}
+                                    cy={pointPos.y}
+                                    r={6}
+                                    fill="#f59e0b"
+                                    stroke="#ffffff"
+                                    strokeWidth={2}
+                                    style={{ cursor: 'crosshair' }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleConnectionPointClick(shape.id, point.id);
+                                    }}
+                                />
+                            );
+                        })}
+                    </g>
+                );
+            };
+
+            const renderArrow = (arrow) => {
+                const startShape = shapes.find(s => s.id === arrow.startId);
+                const endShape = shapes.find(s => s.id === arrow.endId);
+                
+                if (!startShape || !endShape) return null;
+
+                const startPos = getConnectionPointPosition(startShape, arrow.startPoint);
+                const endPos = getConnectionPointPosition(endShape, arrow.endPoint);
+                const pathData = generateOrthogonalPath(startPos.x, startPos.y, endPos.x, endPos.y, arrow.startPoint, arrow.endPoint);
+                
+                const isSelected = selectedElement?.type === 'arrow' && selectedElement.id === arrow.id;
+
+                return (
+                    <g key={arrow.id}>
+                        <defs>
+                            <marker
+                                id={`arrowhead-${arrow.id}`}
+                                markerWidth="10"
+                                markerHeight="7"
+                                refX="9"
+                                refY="3.5"
+                                orient="auto"
+                            >
+                                <polygon
+                                    points="0 0, 10 3.5, 0 7"
+                                    fill={arrow.color}
+                                />
+                            </marker>
+                        </defs>
+
+                        <path
+                            d={pathData}
+                            stroke="transparent"
+                            strokeWidth="15"
+                            fill="none"
+                            style={{ cursor: 'pointer' }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedElement({ type: 'arrow', id: arrow.id });
+                            }}
+                        />
+
+                        <path
+                            d={pathData}
+                            stroke={arrow.color}
+                            strokeWidth={isSelected ? 4 : 2}
+                            strokeDasharray={isSelected ? '8,4' : 'none'}
+                            fill="none"
+                            markerEnd={`url(#arrowhead-${arrow.id})`}
+                            pointerEvents="none"
+                        />
+                    </g>
+                );
+            };
+
+            const renderFreeText = (text) => {
+                const isSelected = selectedElement?.type === 'text' && selectedElement.id === text.id;
+                const isEditing = editingElement?.type === 'text' && editingElement.id === text.id;
+                
+                if (isEditing) {
+                    return (
+                        <foreignObject
+                            key={text.id}
+                            x={text.x - 50}
+                            y={text.y - 10}
+                            width={100}
+                            height={20}
+                        >
+                            <input
+                                type="text"
+                                defaultValue={text.text}
+                                autoFocus
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    border: 'none',
+                                    background: 'transparent',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    color: text.color,
+                                    outline: 'none'
+                                }}
+                                onBlur={(e) => {
+                                    updateElementText(e.target.value);
+                                    setEditingElement(null);
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        updateElementText(e.target.value);
+                                        setEditingElement(null);
+                                    } else if (e.key === 'Escape') {
+                                        setEditingElement(null);
+                                    }
+                                }}
+                            />
+                        </foreignObject>
+                    );
+                }
+                
+                return (
+                    <text
+                        key={text.id}
+                        x={text.x}
+                        y={text.y}
+                        fontSize="14"
+                        fontWeight="500"
+                        fill={isSelected ? '#3b82f6' : text.color}
+                        style={{ cursor: currentMode === 'select' ? 'move' : 'default' }}
+                        data-text-id={text.id}
+                        onClick={(e) => handleTextClick(e, text.id)}
+                        onDoubleClick={(e) => handleTextDoubleClick(e, text.id)}
+                    >
+                        {text.text}
+                    </text>
+                );
+            };
+
+            return (
+                <div className="h-screen flex flex-col bg-gray-50">
+                    {/* Header */}
+                    <div className="bg-white border-b border-gray-200 p-4">
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="app-icon">F</div>
+                            <h1 className="text-2xl font-bold text-gray-900 flex-shrink-0">Flowart</h1>
+
+                            {/* AI Generator */}
+                            <div className="flex items-center gap-3 flex-1 max-w-none">
+                                <div className="flex items-center gap-3 w-full max-w-4xl">
+                                    <input
+                                        type="text"
+                                        placeholder="Describe your flowchart in detail (e.g., 'Create a user login process with validation, error handling, and success redirect')..."
+                                        value={aiPrompt}
+                                        onChange={(e) => setAiPrompt(e.target.value)}
+                                        className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                                        onKeyDown={(e) => e.key === 'Enter' && generateAIFlowchart()}
+                                    />
+                                    <button
+                                        onClick={generateAIFlowchart}
+                                        disabled={isGenerating || !aiPrompt.trim()}
+                                        className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap"
+                                    >
+                                        <Bot size={18} />
+                                        {isGenerating ? 'Generating...' : 'AI Generate'}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* File Operations */}
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                                <button
+                                    onClick={exportData}
+                                    className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                                    title="Export JSON"
+                                >
+                                    <Download size={20} />
+                                </button>
+                                <button
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                                    title="Import JSON"
+                                >
+                                    <Upload size={20} />
+                                </button>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept=".json"
+                                    onChange={importData}
+                                    className="hidden"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Toolbar */}
+                    <div className="bg-white border-b border-gray-200 p-4">
+                        <div className="flex items-center gap-6 flex-wrap">
+                            {/* Mode Tools */}
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-gray-700">Mode:</span>
+                                <button
+                                    onClick={() => setCurrentMode('select')}
+                                    className={`p-2 rounded-lg ${currentMode === 'select' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}
+                                    title="Select"
+                                >
+                                    <MousePointer size={18} />
+                                </button>
+                                <button
+                                    onClick={() => setCurrentMode('text')}
+                                    className={`p-2 rounded-lg ${currentMode === 'text' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}
+                                    title="Text"
+                                >
+                                    <Type size={18} />
+                                </button>
+                                <button
+                                    onClick={() => setCurrentMode('arrow')}
+                                    className={`p-2 rounded-lg ${currentMode === 'arrow' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}
+                                    title="Arrow"
+                                >
+                                    <ArrowRight size={18} />
+                                </button>
+                                <button
+                                    onClick={() => setCurrentMode('pan')}
+                                    className={`p-2 rounded-lg ${currentMode === 'pan' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}
+                                    title="Pan"
+                                >
+                                    <Move size={18} />
+                                </button>
+                            </div>
+
+                            {/* Shape Tools */}
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-gray-700">Shapes:</span>
+                                {shapeTypes.map(({ type, icon: Icon, label }) => (
+                                    <button
+                                        key={type}
+                                        onClick={() => setCurrentMode(type)}
+                                        className={`p-2 rounded-lg ${currentMode === type ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}
+                                        title={label}
+                                    >
+                                        <Icon size={18} />
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* View Controls */}
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-gray-700">View:</span>
+                                <button onClick={zoomIn} className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg" title="Zoom In">
+                                    <ZoomIn size={18} />
+                                </button>
+                                <span className="text-sm text-gray-600 min-w-12 text-center">
+                                    {Math.round(canvasTransform.scale * 100)}%
+                                </span>
+                                <button onClick={zoomOut} className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg" title="Zoom Out">
+                                    <ZoomOut size={18} />
+                                </button>
+                                <button onClick={resetView} className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg" title="Reset View">
+                                    <RotateCcw size={18} />
+                                </button>
+                                <button
+                                    onClick={toggleGrid}
+                                    className={`p-2 rounded-lg ${showGrid ? 'bg-gray-200 text-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                                    title={showGrid ? 'Hide Grid' : 'Show Grid'}
+                                >
+                                    <Grid3X3 size={18} />
+                                </button>
+                            </div>
+
+                            {/* Color Dropdown */}
+                            <span className="text-sm font-medium text-gray-700">Color:</span>
+                            <div className="relative" ref={colorDropdownRef}>
+                                <button
+                                    onClick={() => setShowColorDropdown(!showColorDropdown)}
+                                    className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <div
+                                        className="w-5 h-5 rounded border border-gray-400"
+                                        style={{ backgroundColor: currentColor }}
+                                    />
+                                    <span className="text-sm text-gray-700">{getCurrentColorName()}</span>
+                                    <ChevronDown size={16} className="text-gray-500" />
+                                </button>
+
+                                {showColorDropdown && (
+                                    <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-64">
+                                        {Object.entries(colorGroups).map(([groupName, colors]) => (
+                                            <div key={groupName} className="p-3">
+                                                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                                                    {groupName}
+                                                </h4>
+                                                <div className="grid grid-cols-4 gap-2">
+                                                    {colors.map(({ color, name }) => (
+                                                        <button
+                                                            key={color}
+                                                            onClick={() => {
+                                                                setCurrentColor(color);
+                                                                setShowColorDropdown(false);
+                                                            }}
+                                                            className={`flex items-center gap-2 p-2 rounded hover:bg-gray-50 text-left ${
+                                                                currentColor === color ? 'bg-blue-50 ring-2 ring-blue-500' : ''
+                                                            }`}
+                                                            title={name}
+                                                        >
+                                                            <div
+                                                                className="w-4 h-4 rounded border border-gray-300 flex-shrink-0"
+                                                                style={{ backgroundColor: color }}
+                                                            />
+                                                            <span className="text-xs text-gray-700 truncate">{name}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex items-center gap-2 ml-auto">
+                                {selectedElement && (selectedElement.type === 'shape' || selectedElement.type === 'text') && (
+                                    <button
+                                        onClick={startEditing}
+                                        className="flex items-center gap-1 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                                        title="Edit Text"
+                                    >
+                                        <Edit2 size={16} />
+                                        <span className="text-sm">Edit</span>
+                                    </button>
+                                )}
+                                <button
+                                    onClick={deleteSelected}
+                                    disabled={!selectedElement}
+                                    className="flex items-center gap-1 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="Delete Selected Element"
+                                >
+                                    <Trash2 size={16} />
+                                    <span className="text-sm">Delete</span>
+                                </button>
+                                <button
+                                    onClick={clearCanvas}
+                                    disabled={shapes.length === 0 && arrows.length === 0 && freeTexts.length === 0}
+                                    className="flex items-center gap-1 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="Clear Entire Canvas"
+                                >
+                                    <X size={16} />
+                                    <span className="text-sm">Clear All</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Canvas */}
+                    <div className="flex-1 relative overflow-hidden">
+                        <div
+                            ref={canvasRef}
+                            className="w-full h-full"
+                            onMouseDown={handleMouseDown}
+                            onMouseMove={handleMouseMove}
+                            onMouseUp={handleMouseUp}
+                            style={{ cursor: currentMode === 'pan' ? 'grab' : isPanning ? 'grabbing' : 'default' }}
+                        >
+                            <svg
+                                className="w-full h-full"
+                                onClick={handleCanvasClick}
+                                style={{
+                                    transform: `translate(${canvasTransform.x}px, ${canvasTransform.y}px) scale(${canvasTransform.scale})`,
+                                    transformOrigin: '0 0'
+                                }}
+                            >
+                                <defs>
+                                    {showGrid && (
+                                        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                                            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" strokeWidth="1" />
+                                        </pattern>
+                                    )}
+                                </defs>
+
+                                <rect 
+                                    width="100%" 
+                                    height="100%" 
+                                    fill={showGrid ? "url(#grid)" : "#ffffff"} 
+                                />
+
+                                {arrows.map(renderArrow)}
+                                {shapes.map(renderShape)}
+                                {freeTexts.map(renderFreeText)}
+                            </svg>
+                        </div>
+                    </div>
+
+                    {/* Status Bar */}
+                    <div className="bg-white border-t border-gray-200 px-4 py-2">
+                        <div className="flex items-center justify-between text-sm text-gray-600">
+                            <span>
+                                {selectedElement ? 
+                                    `Selected: ${selectedElement.type} (ID: ${selectedElement.id})${editingElement ? ' - Editing' : ''}` : 
+                                    'No selection'
+                                }
+                            </span>
+                            <div className="flex items-center gap-4">
+                                <span>Grid: {showGrid ? 'ON' : 'OFF'}</span>
+                                <span>Shapes: {shapes.length} | Arrows: {arrows.length} | Texts: {freeTexts.length}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Use React 18's createRoot API
+        const container = document.getElementById('preview-app');
+        const root = ReactDOM.createRoot(container);
+        root.render(<FlowchartApp />);
+    </script>
+
+
+</body></html>
