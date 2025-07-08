@@ -64,7 +64,6 @@
         const Edit2 = (props) => <Icon d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" {...props} />;
         const Image = (props) => <Icon d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" {...props} />;
         const FileImage = (props) => <Icon d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 12h8M8 16h8M8 20h8" {...props} />;
-        const Palette = (props) => <Icon d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10c.396 0 .768-.064 1.085-.197l.051-.021a10.971 10.971 0 0 0 6.766-6.766l.021-.051c.133-.317.197-.689.197-1.085 0-2.761-2.239-5-5-5H12.2c-.442 0-.8-.358-.8-.8 0-4.411-3.589-8-8-8z" {...props} />;
 
         const FlowchartApp = () => {
             const [currentMode, setCurrentMode] = useState('select');
@@ -85,7 +84,6 @@
             const [showGrid, setShowGrid] = useState(true);
             const [showColorDropdown, setShowColorDropdown] = useState(false);
             const [showExportDropdown, setShowExportDropdown] = useState(false);
-            const [resizeHandle, setResizeHandle] = useState(null);
             
             const canvasRef = useRef(null);
             const fileInputRef = useRef(null);
@@ -162,43 +160,6 @@
                 }
                 return currentColor;
             };
-
-            // Change color of selected element
-            const changeSelectedElementColor = (color) => {
-                if (!selectedElement) return;
-
-                if (selectedElement.type === 'shape') {
-                    setShapes(prev => prev.map(shape => 
-                        shape.id === selectedElement.id 
-                            ? { ...shape, color }
-                            : shape
-                    ));
-                } else if (selectedElement.type === 'text') {
-                    setFreeTexts(prev => prev.map(text => 
-                        text.id === selectedElement.id 
-                            ? { ...text, color }
-                            : text
-                    ));
-                } else if (selectedElement.type === 'arrow') {
-                    setArrows(prev => prev.map(arrow => 
-                        arrow.id === selectedElement.id 
-                            ? { ...arrow, color }
-                            : arrow
-                    ));
-                }
-            };
-
-            // Get resize handles for selected shape - made larger and less sensitive
-            const getResizeHandles = (shape) => [
-                { id: 'nw', x: shape.x, y: shape.y, cursor: 'nw-resize' },
-                { id: 'ne', x: shape.x + shape.width, y: shape.y, cursor: 'ne-resize' },
-                { id: 'sw', x: shape.x, y: shape.y + shape.height, cursor: 'sw-resize' },
-                { id: 'se', x: shape.x + shape.width, y: shape.y + shape.height, cursor: 'se-resize' },
-                { id: 'n', x: shape.x + shape.width/2, y: shape.y, cursor: 'n-resize' },
-                { id: 's', x: shape.x + shape.width/2, y: shape.y + shape.height, cursor: 's-resize' },
-                { id: 'w', x: shape.x, y: shape.y + shape.height/2, cursor: 'w-resize' },
-                { id: 'e', x: shape.x + shape.width, y: shape.y + shape.height/2, cursor: 'e-resize' }
-            ];
 
             useEffect(() => {
                 const handleClickOutside = (event) => {
@@ -368,14 +329,6 @@
                 }
             }, [currentMode]);
 
-            const handleArrowClick = useCallback((e, arrowId) => {
-                e.stopPropagation();
-                if (currentMode === 'select') {
-                    setSelectedElement({ type: 'arrow', id: arrowId });
-                    setEditingElement(null);
-                }
-            }, [currentMode]);
-
             const handleShapeDoubleClick = useCallback((e, shapeId) => {
                 e.stopPropagation();
                 if (currentMode === 'select') {
@@ -392,24 +345,6 @@
                 }
             }, [currentMode]);
 
-            const handleResizeHandleMouseDown = useCallback((e, shapeId, handleId) => {
-                e.stopPropagation();
-                if (currentMode !== 'select') return;
-                
-                const coords = getCanvasCoordinates(e.clientX, e.clientY);
-                const shape = shapes.find(s => s.id === shapeId);
-                if (!shape) return;
-
-                setResizeHandle({
-                    shapeId,
-                    handleId,
-                    startX: coords.x,
-                    startY: coords.y,
-                    originalShape: { ...shape }, // Store original shape dimensions
-                    hasMoved: false // Track if mouse has moved significantly
-                });
-            }, [currentMode, getCanvasCoordinates, shapes]);
-
             const handleMouseDown = useCallback((e) => {
                 if (currentMode === 'pan') {
                     setIsPanning(true);
@@ -418,14 +353,6 @@
                 }
 
                 if (currentMode !== 'select') return;
-
-                const resizeHandleElement = e.target.closest('[data-resize-handle]');
-                if (resizeHandleElement) {
-                    const shapeId = parseInt(resizeHandleElement.dataset.shapeId);
-                    const handleId = resizeHandleElement.dataset.resizeHandle;
-                    handleResizeHandleMouseDown(e, shapeId, handleId);
-                    return;
-                }
 
                 const shapeElement = e.target.closest('[data-shape-id]');
                 const textElement = e.target.closest('[data-text-id]');
@@ -459,7 +386,7 @@
                         setSelectedElement({ type: 'text', id: textId });
                     }
                 }
-            }, [currentMode, canvasTransform, getCanvasCoordinates, shapes, freeTexts, handleResizeHandleMouseDown]);
+            }, [currentMode, canvasTransform, getCanvasCoordinates, shapes, freeTexts]);
 
             const handleMouseMove = useCallback((e) => {
                 if (isPanning) {
@@ -468,90 +395,6 @@
                         x: e.clientX - panStart.x,
                         y: e.clientY - panStart.y
                     }));
-                    return;
-                }
-
-                if (resizeHandle) {
-                    const coords = getCanvasCoordinates(e.clientX, e.clientY);
-                    const deltaX = coords.x - resizeHandle.startX;
-                    const deltaY = coords.y - resizeHandle.startY;
-
-                    // Add dead zone to reduce sensitivity
-                    const deadZone = 3; // Minimum movement required before resize starts
-                    const totalMovement = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-                    
-                    if (!resizeHandle.hasMoved && totalMovement < deadZone) {
-                        return; // Don't start resizing until minimum movement threshold is met
-                    }
-
-                    // Apply sensitivity reduction factor
-                    const sensitivityFactor = 0.8; // Reduce sensitivity by 20%
-                    const adjustedDeltaX = deltaX * sensitivityFactor;
-                    const adjustedDeltaY = deltaY * sensitivityFactor;
-
-                    setShapes(prev => prev.map(shape => {
-                        if (shape.id !== resizeHandle.shapeId) return shape;
-
-                        let newShape = { ...resizeHandle.originalShape };
-                        const minSize = 30; // Minimum width/height
-
-                        switch (resizeHandle.handleId) {
-                            case 'se': // Bottom-right
-                                newShape.width = Math.max(minSize, resizeHandle.originalShape.width + adjustedDeltaX);
-                                newShape.height = Math.max(minSize, resizeHandle.originalShape.height + adjustedDeltaY);
-                                break;
-                            case 'sw': // Bottom-left
-                                newShape.width = Math.max(minSize, resizeHandle.originalShape.width - adjustedDeltaX);
-                                newShape.height = Math.max(minSize, resizeHandle.originalShape.height + adjustedDeltaY);
-                                if (newShape.width >= minSize) {
-                                    newShape.x = resizeHandle.originalShape.x + adjustedDeltaX;
-                                }
-                                break;
-                            case 'ne': // Top-right
-                                newShape.width = Math.max(minSize, resizeHandle.originalShape.width + adjustedDeltaX);
-                                newShape.height = Math.max(minSize, resizeHandle.originalShape.height - adjustedDeltaY);
-                                if (newShape.height >= minSize) {
-                                    newShape.y = resizeHandle.originalShape.y + adjustedDeltaY;
-                                }
-                                break;
-                            case 'nw': // Top-left
-                                newShape.width = Math.max(minSize, resizeHandle.originalShape.width - adjustedDeltaX);
-                                newShape.height = Math.max(minSize, resizeHandle.originalShape.height - adjustedDeltaY);
-                                if (newShape.width >= minSize) {
-                                    newShape.x = resizeHandle.originalShape.x + adjustedDeltaX;
-                                }
-                                if (newShape.height >= minSize) {
-                                    newShape.y = resizeHandle.originalShape.y + adjustedDeltaY;
-                                }
-                                break;
-                            case 'n': // Top
-                                newShape.height = Math.max(minSize, resizeHandle.originalShape.height - adjustedDeltaY);
-                                if (newShape.height >= minSize) {
-                                    newShape.y = resizeHandle.originalShape.y + adjustedDeltaY;
-                                }
-                                break;
-                            case 's': // Bottom
-                                newShape.height = Math.max(minSize, resizeHandle.originalShape.height + adjustedDeltaY);
-                                break;
-                            case 'w': // Left
-                                newShape.width = Math.max(minSize, resizeHandle.originalShape.width - adjustedDeltaX);
-                                if (newShape.width >= minSize) {
-                                    newShape.x = resizeHandle.originalShape.x + adjustedDeltaX;
-                                }
-                                break;
-                            case 'e': // Right
-                                newShape.width = Math.max(minSize, resizeHandle.originalShape.width + adjustedDeltaX);
-                                break;
-                        }
-
-                        return newShape;
-                    }));
-
-                    // Mark that we've started moving
-                    if (!resizeHandle.hasMoved && totalMovement >= deadZone) {
-                        setResizeHandle(prev => ({ ...prev, hasMoved: true }));
-                    }
-                    
                     return;
                 }
 
@@ -572,12 +415,11 @@
                             : text
                     ));
                 }
-            }, [isPanning, panStart, dragData, resizeHandle, getCanvasCoordinates]);
+            }, [isPanning, panStart, dragData, getCanvasCoordinates]);
 
             const handleMouseUp = useCallback(() => {
                 setIsPanning(false);
                 setDragData(null);
-                setResizeHandle(null);
             }, []);
 
             const updateElementText = useCallback((newText) => {
@@ -1044,25 +886,6 @@
                                 />
                             );
                         })}
-
-                        {/* Resize handles for selected shapes - made larger and more visible */}
-                        {isSelected && currentMode === 'select' && getResizeHandles(shape).map(handle => (
-                            <rect
-                                key={handle.id}
-                                data-resize-handle={handle.id}
-                                data-shape-id={shape.id}
-                                x={handle.x - 6} // Increased from 4 to 6
-                                y={handle.y - 6} // Increased from 4 to 6
-                                width={12} // Increased from 8 to 12
-                                height={12} // Increased from 8 to 12
-                                fill="#3b82f6"
-                                stroke="#ffffff"
-                                strokeWidth={2}
-                                rx={2} // Added rounded corners for better visibility
-                                style={{ cursor: handle.cursor }}
-                                onMouseDown={(e) => handleResizeHandleMouseDown(e, shape.id, handle.id)}
-                            />
-                        ))}
                     </g>
                 );
             };
@@ -1103,7 +926,10 @@
                             strokeWidth="15"
                             fill="none"
                             style={{ cursor: 'pointer' }}
-                            onClick={(e) => handleArrowClick(e, arrow.id)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedElement({ type: 'arrow', id: arrow.id });
+                            }}
                         />
 
                         <path
@@ -1373,7 +1199,6 @@
                                                             key={color}
                                                             onClick={() => {
                                                                 setCurrentColor(color);
-                                                                changeSelectedElementColor(color);
                                                                 setShowColorDropdown(false);
                                                             }}
                                                             className={`flex items-center gap-2 p-2 rounded hover:bg-gray-50 text-left ${
@@ -1396,16 +1221,6 @@
                             </div>
 
                             <div className="flex items-center gap-2 ml-auto">
-                                {selectedElement && (
-                                    <button
-                                        onClick={() => setShowColorDropdown(!showColorDropdown)}
-                                        className="flex items-center gap-1 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-                                        title="Change Color"
-                                    >
-                                        <Palette size={16} />
-                                        <span className="text-sm">Color</span>
-                                    </button>
-                                )}
                                 {selectedElement && (selectedElement.type === 'shape' || selectedElement.type === 'text') && (
                                     <button
                                         onClick={startEditing}
@@ -1498,7 +1313,6 @@
         const root = ReactDOM.createRoot(container);
         root.render(<FlowchartApp />);
     </script>
-
 
 
 
